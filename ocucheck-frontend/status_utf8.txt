@@ -1,0 +1,32 @@
+﻿ M package-lock.json
+ M package.json
+ M postcss.config.mjs
+ M src/app/globals.css
+ M src/app/layout.tsx
+ D src/app/page.tsx
+?? diff_output.txt
+?? diff_utf8.txt
+?? src/app/(marketing)/
+?? src/app/(workspace)/
+?? src/components/marketing/
+?? src/components/shared/
+?? src/components/ui/badge.tsx
+?? src/components/ui/card.tsx
+?? src/components/ui/dialog.tsx
+?? src/components/ui/input.tsx
+?? src/components/ui/scroll-area.tsx
+?? src/components/ui/separator.tsx
+?? src/components/ui/sheet.tsx
+?? src/components/ui/tabs.tsx
+?? src/components/ui/textarea.tsx
+?? src/components/ui/tooltip.tsx
+?? src/components/workspace/
+?? src/features/
+?? src/lib/api/
+?? src/lib/constants/
+?? src/lib/utils/
+?? src/providers/
+?? src/store/
+?? src/styles/
+?? status_utf8.txt
+?? tailwind.config.ts

@@ -1,0 +1,540 @@
+
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+@import "../styles/tokens.css";
+@import "@stream-io/video-react-sdk/dist/css/styles.css";
+
+/* ─── tokens.css companion — ensure these vars exist ─── */
+/* If tokens.css doesn't define these yet, add them there:
+   --color-bg: #0e0f11
+   --color-surface: #14161a
+   --color-surface-2: #1c1f24
+   --color-surface-offset: #1a1d22
+   --color-surface-dynamic: #22262d
+   --color-border: rgba(255,255,255,0.07)
+   --color-text: #f1f0ee
+   --color-text-muted: #8b8a87
+   --color-text-faint: #4a4947
+   --color-primary: #2dd4bf
+   --color-primary-hover: #14b8a6
+   --color-secondary: #3b82f6
+   --color-success: #22c55e
+   --color-warning: #f59e0b
+   --color-error: #ef4444
+   --font-display: 'Cabinet Grotesk', sans-serif
+   --font-body: 'Satoshi', sans-serif
+   --radius-sm: 4px
+   --radius-md: 6px
+   --radius-lg: 10px
+   --radius-xl: 14px
+   --radius-2xl: 20px
+   --radius-full: 9999px
+   --shadow-card: 0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3)
+   --shadow-card-hover: 0 2px 8px rgba(0,0,0,0.5), 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(45,212,191,0.08)
+*/
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+    scroll-padding-top: 4rem;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    font-family: var(--font-body, 'Satoshi', sans-serif);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text);
+    background: var(--color-bg);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display, 'Cabinet Grotesk', sans-serif);
+    line-height: 1.1;
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+
+  p, li {
+    text-wrap: pretty;
+    max-width: 72ch;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button, input, textarea, select {
+    font: inherit;
+  }
+
+  img, svg, video, canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  ::selection {
+    background: oklch(0.65 0.2 180deg / 0.25);
+    color: var(--color-text);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+  }
+}
+
+
+/* ══════════════════════════════════════════════
+   RGB GLOW SYSTEM
+══════════════════════════════════════════════ */
+@property --glow-hue {
+  syntax: "<angle>";
+  initial-value: 180deg;
+  inherits: false;
+}
+
+@keyframes rgb-cycle {
+  0%   { --glow-hue: 180deg; }
+  25%  { --glow-hue: 220deg; }
+  50%  { --glow-hue: 280deg; }
+  75%  { --glow-hue: 140deg; }
+  100% { --glow-hue: 180deg; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; transform: scaleX(1); }
+  50%       { opacity: 1;   transform: scaleX(1.02); }
+}
+
+.rgb-line {
+  height: 1px;
+  background: oklch(0.65 0.2 var(--glow-hue));
+  box-shadow:
+    0 0 6px 1px oklch(0.65 0.2 var(--glow-hue) / 0.8),
+    0 0 20px 4px oklch(0.65 0.2 var(--glow-hue) / 0.4);
+  animation:
+    rgb-cycle 4s linear infinite,
+    glow-pulse 2s ease-in-out infinite;
+}
+
+.rgb-line-thick {
+  height: 2px;
+  background: oklch(0.7 0.22 var(--glow-hue));
+  box-shadow:
+    0 0 8px 2px oklch(0.7 0.22 var(--glow-hue) / 0.9),
+    0 0 30px 6px oklch(0.7 0.22 var(--glow-hue) / 0.3);
+  animation:
+    rgb-cycle 3s linear infinite,
+    glow-pulse 1.8s ease-in-out infinite;
+}
+
+.rgb-border {
+  border: 1px solid oklch(0.65 0.2 var(--glow-hue) / 0.5);
+  box-shadow:
+    0 0 8px 0px oklch(0.65 0.2 var(--glow-hue) / 0.4),
+    inset 0 0 8px 0px oklch(0.65 0.2 var(--glow-hue) / 0.1);
+  animation: rgb-cycle 4s linear infinite;
+}
+
+.rgb-text {
+  color: oklch(0.75 0.2 var(--glow-hue));
+  text-shadow:
+    0 0 8px oklch(0.75 0.2 var(--glow-hue) / 0.8),
+    0 0 20px oklch(0.75 0.2 var(--glow-hue) / 0.4);
+  animation: rgb-cycle 4s linear infinite;
+}
+
+
+/* ══════════════════════════════════════════════
+   TRIAGE SEVERITY SYSTEM
+   (matches Stitch badge colors exactly)
+══════════════════════════════════════════════ */
+.triage-normal {
+  color: #22c55e;
+  background: rgba(34,197,94,0.08);
+  border: 1px solid rgba(34,197,94,0.2);
+  box-shadow: 0 0 8px 0 rgba(34,197,94,0.15);
+}
+
+.triage-monitor {
+  color: #f59e0b;
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.2);
+  box-shadow: 0 0 8px 0 rgba(245,158,11,0.15);
+}
+
+.triage-urgent {
+  color: #ef4444;
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.2);
+  box-shadow: 0 0 8px 0 rgba(239,68,68,0.15);
+}
+
+.triage-emergency {
+  color: #dc2626;
+  background: rgba(220,38,38,0.12);
+  border: 1px solid rgba(220,38,38,0.3);
+  box-shadow: 0 0 12px 0 rgba(220,38,38,0.25);
+  animation: emergency-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes emergency-pulse {
+  0%, 100% { box-shadow: 0 0 12px 0 rgba(220,38,38,0.25); }
+  50%       { box-shadow: 0 0 20px 4px rgba(220,38,38,0.4); }
+}
+
+
+/* ══════════════════════════════════════════════
+   SKELETON LOADING SYSTEM
+══════════════════════════════════════════════ */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-offset) 25%,
+    var(--color-surface-dynamic) 50%,
+    var(--color-surface-offset) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+.skeleton-line {
+  height: 0.875rem;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-offset) 25%,
+    var(--color-surface-dynamic) 50%,
+    var(--color-surface-offset) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+}
+
+.skeleton-badge {
+  height: 2.25rem;
+  border-radius: var(--radius-full);
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-offset) 25%,
+    var(--color-surface-dynamic) 50%,
+    var(--color-surface-offset) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+}
+
+.skeleton-line:nth-child(2) { animation-delay: 0.1s; }
+.skeleton-line:nth-child(3) { animation-delay: 0.2s; }
+.skeleton-line:nth-child(4) { animation-delay: 0.3s; }
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+
+/* ══════════════════════════════════════════════
+   CARD ELEVATION SYSTEM
+   (matches Stitch bento card style)
+══════════════════════════════════════════════ */
+.card-elevated {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: var(--shadow-card);
+  transition:
+    box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-elevated:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: rgba(45, 212, 191, 0.12);
+  transform: translateY(-1px);
+}
+
+
+/* ══════════════════════════════════════════════
+   MESSAGE + CHAT ANIMATIONS
+══════════════════════════════════════════════ */
+.message-bubble {
+  animation: message-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes message-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Streaming text cursor */
+.stream-cursor::after {
+  content: '▋';
+  display: inline-block;
+  color: var(--color-primary);
+  animation: cursor-blink 800ms step-end infinite;
+  margin-left: 1px;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+
+/* ══════════════════════════════════════════════
+   HEARTBEAT PULSE DOTS
+══════════════════════════════════════════════ */
+.heartbeat-dot {
+  animation: heartbeat 1.2s ease-in-out infinite;
+}
+
+.heartbeat-dot:nth-child(1) { animation-delay: 0s; }
+.heartbeat-dot:nth-child(2) { animation-delay: 0.2s; }
+.heartbeat-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes heartbeat {
+  0%, 60%, 100% { transform: scale(1);   opacity: 0.4; }
+  30%            { transform: scale(1.6); opacity: 1;   }
+}
+
+
+/* ══════════════════════════════════════════════
+   EYE IRIS + SCAN ANIMATIONS
+══════════════════════════════════════════════ */
+@keyframes eye-iris {
+  0%, 100% { transform: scale(1); }
+  40%       { transform: scale(0.72); }
+  60%       { transform: scale(0.78); }
+}
+
+@keyframes eye-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Live scan pulse rings — matches Stitch scan engine card */
+.scan-ring {
+  animation: scan-pulse-ring 2s ease-out infinite;
+}
+
+.scan-ring:nth-child(2) { animation-delay: 0.5s; }
+.scan-ring:nth-child(3) { animation-delay: 1s; }
+
+@keyframes scan-pulse-ring {
+  0%   { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(2);   opacity: 0; }
+}
+
+/* Teal iris scan glow — matches live scan engine visual */
+.scan-iris-glow {
+  box-shadow:
+    0 0 0 1px rgba(45, 212, 191, 0.3),
+    0 0 20px 4px rgba(45, 212, 191, 0.15),
+    inset 0 0 30px rgba(45, 212, 191, 0.08);
+  animation: iris-breathe 3s ease-in-out infinite;
+}
+
+@keyframes iris-breathe {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px rgba(45, 212, 191, 0.3),
+      0 0 20px 4px rgba(45, 212, 191, 0.15),
+      inset 0 0 30px rgba(45, 212, 191, 0.08);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px rgba(45, 212, 191, 0.5),
+      0 0 40px 8px rgba(45, 212, 191, 0.25),
+      inset 0 0 50px rgba(45, 212, 191, 0.12);
+  }
+}
+
+
+/* ══════════════════════════════════════════════
+   BADGE + PROTOCOL ANIMATIONS
+══════════════════════════════════════════════ */
+@keyframes badge-reveal {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes protocol-slide {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.protocol-banner {
+  animation: protocol-slide 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Protocol pill — teal accent, matches Stitch chat */
+.protocol-pill {
+  background: rgba(45, 212, 191, 0.08);
+  border: 1px solid rgba(45, 212, 191, 0.2);
+  color: #2dd4bf;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+
+/* ══════════════════════════════════════════════
+   SCAN FLASH
+══════════════════════════════════════════════ */
+.scan-flash-overlay {
+  animation: scan-flash 600ms ease-out forwards;
+}
+
+@keyframes scan-flash {
+  0%   { opacity: 0; }
+  50%  { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
+
+/* ══════════════════════════════════════════════
+   NODE CONNECT SVG
+══════════════════════════════════════════════ */
+.node-connect-line {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: node-connect 800ms cubic-bezier(0.16, 1, 0.3, 1) 400ms forwards;
+}
+
+@keyframes node-connect {
+  0%   { stroke-dashoffset: 100; }
+  100% { stroke-dashoffset: 0; }
+}
+
+
+/* ══════════════════════════════════════════════
+   HERO SECTION REVEAL
+   (for landing page sections from Stitch)
+══════════════════════════════════════════════ */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-up.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-up:nth-child(1) { transition-delay: 0ms; }
+.reveal-up:nth-child(2) { transition-delay: 80ms; }
+.reveal-up:nth-child(3) { transition-delay: 160ms; }
+.reveal-up:nth-child(4) { transition-delay: 240ms; }
+.reveal-up:nth-child(5) { transition-delay: 320ms; }
+
+
+/* ══════════════════════════════════════════════
+   CTA BUTTON GLOW (landing page primary button)
+══════════════════════════════════════════════ */
+.btn-primary-glow {
+  background: var(--color-primary);
+  color: #0e0f11;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  transition:
+    box-shadow 200ms ease,
+    background 200ms ease,
+    transform 150ms ease;
+}
+
+.btn-primary-glow:hover {
+  background: var(--color-primary-hover, #14b8a6);
+  box-shadow:
+    0 0 0 3px rgba(45, 212, 191, 0.15),
+    0 4px 20px rgba(45, 212, 191, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-primary-glow:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+
+/* ══════════════════════════════════════════════
+   SIDEBAR NAV
+══════════════════════════════════════════════ */
+.nav-item {
+  transition:
+    transform 120ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.nav-item:hover {
+  transform: translateX(2px);
+}
+
+
+/* ══════════════════════════════════════════════
+   TRUST STRIP NUMBER COUNTER
+   (matches "High-fidelity clinical precision" section)
+══════════════════════════════════════════════ */
+.counter-value {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  transition: all 300ms ease;
+}
+
+
+/* ══════════════════════════════════════════════
+   REDUCED MOTION (accessibility)
+══════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .rgb-line,
+  .rgb-line-thick,
+  .rgb-border,
+  .rgb-text {
+    animation: none;
+    --glow-hue: 180deg;
+  }
+
+  .skeleton,
+  .skeleton-line,
+  .skeleton-badge,
+  .message-bubble,
+  .heartbeat-dot,
+  .protocol-banner,
+  .scan-flash-overlay,
+  .scan-ring,
+  .node-connect-line,
+  .reveal-up,
+  .scan-iris-glow,
+  .stream-cursor::after,
+  .triage-emergency {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+/* Add inside your existing globals.css */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px #2dd4bf; }
+  50%       { opacity: 0.5; box-shadow: 0 0 8px #2dd4bf; }
+}
